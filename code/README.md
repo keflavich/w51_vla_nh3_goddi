@@ -32,3 +32,8 @@ The absorption-based rotation diagram fitting.  Has hard-coded fluxes!
 ``hf_only_model.py``
 
 A variatety of pyspeckit models for fitting the NH3 hyperfines
+
+``fit_66_cube.py``
+``plot_66_maps.py``
+
+Fit the 6-6 lines pixel-by-pixel and then create velocity field maps
