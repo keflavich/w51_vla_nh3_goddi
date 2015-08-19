@@ -48,6 +48,7 @@ def load_spectrum(j=6, object='w51e2-tot',
     # compute the typical noise over the -10 to 10 km/s region
     mean_error = sp.stats((-10,10))['std']
     sp.error[:] = mean_error
+    sp.specname = '{0} {1}'.format(object, linename)
 
     # Copy the spectrum so we can convert it to Kelvins
     spK = sp.copy()
