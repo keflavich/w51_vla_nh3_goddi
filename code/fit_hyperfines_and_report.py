@@ -1,6 +1,9 @@
 """
 Code for populating table 3
+
+Run this in a direcotry that contains the relevant spectrum text files
 """
+import os
 import numpy as np
 import pyspeckit
 import goddi_nh3_fits
@@ -8,11 +11,21 @@ from hf_only_model import hfonly_fitter
 from astropy import units as u
 from astropy import constants
 from astroquery.splatalogue import Splatalogue
+import pylab as pl
+
+# we're going to make a lot of figures.  Close some.
+for ii in pl.get_fignums():
+    pl.close(ii)
+
+savepath = '/Users/adam/Dropbox/w51_goddi_share/spec-casa/figures/'
+resultpath = '/Users/adam/Dropbox/w51_goddi_share/fit_results.txt'
+
+outf = open(resultpath, 'w')
 
 distance = 5.41*u.kpc
 XNH3 = 1e-7
 
-areas = {'e2emi': np.pi*0.45*u.arcsec*0.4459*u.arcsec,
+areas = {'e2e': np.pi*0.45*u.arcsec*0.4459*u.arcsec, # WARNING: this hasn't been updated since the change from e2emi to e2e
          'e2abs': np.pi*0.45*u.arcsec*0.40*u.arcsec,
          'e8': np.pi*2.1707*u.arcsec*1.6168*u.arcsec,
         }
@@ -82,45 +95,46 @@ def tbl_vals_gaussian(pi):
 def integral_ml(pi):
     return tbl_vals_gaussian(pi)[4:6]
 
-sp6e2emi,spK6e2emi,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
-sp6e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp7e2emi,spK7e2emi,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
-sp7e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp9e2emi,spK9e2emi,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
-sp9e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp10e2emi,spK10e2emi,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-29GHzcont.map.image.fits')
-sp10e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp13e2emi,spK13e2emi,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-33GHzcont.map.image.fits')
-sp13e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-
 F = False
 T = True
-sp6e2emi.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
-sp7e2emi.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
-sp9e2emi.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F])
-hfpi6e2emi = sp6e2emi.specfit.parinfo
-hfpi7e2emi = sp7e2emi.specfit.parinfo
-hfpi9e2emi = sp9e2emi.specfit.parinfo
 
-print "e2emi"
-print "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2emi.specfit.parinfo)))
-print "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2emi.specfit.parinfo)))
-print "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2emi.specfit.parinfo)))
-sp6e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
-sp7e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
-sp9e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
-sp10e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
-sp13e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
-mlpi6e2emi = sp6e2emi.specfit.parinfo
-mlpi7e2emi = sp7e2emi.specfit.parinfo
-mlpi9e2emi = sp9e2emi.specfit.parinfo
-mlpi10e2emi = sp9e2emi.specfit.parinfo
-mlpi13e2emi = sp9e2emi.specfit.parinfo
-print "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2emi.specfit.parinfo)))
-print "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2emi.specfit.parinfo)))
-print "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2emi.specfit.parinfo)))
-print "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2emi.specfit.parinfo)))
-print "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2emi.specfit.parinfo)))
+# sp6e2emi,spK6e2emi,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+# sp6e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp7e2emi,spK7e2emi,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+# sp7e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp9e2emi,spK9e2emi,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+# sp9e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp10e2emi,spK10e2emi,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-29GHzcont.map.image.fits')
+# sp10e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp13e2emi,spK13e2emi,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-33GHzcont.map.image.fits')
+# sp13e2emi.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# 
+# sp6e2emi.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+# sp7e2emi.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+# sp9e2emi.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F])
+# hfpi6e2emi = sp6e2emi.specfit.parinfo
+# hfpi7e2emi = sp7e2emi.specfit.parinfo
+# hfpi9e2emi = sp9e2emi.specfit.parinfo
+# 
+# print >>outf, "OUTDATED - e2emi - superceded by e2e, e2nw, e2clump"
+# print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2emi.specfit.parinfo)))
+# print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2emi.specfit.parinfo)))
+# print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2emi.specfit.parinfo)))
+# sp6e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
+# sp7e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
+# sp9e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
+# sp10e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
+# sp13e2emi.specfit(fittype='gaussian', guesses=[1, 58, 1])
+# mlpi6e2emi = sp6e2emi.specfit.parinfo
+# mlpi7e2emi = sp7e2emi.specfit.parinfo
+# mlpi9e2emi = sp9e2emi.specfit.parinfo
+# mlpi10e2emi = sp9e2emi.specfit.parinfo
+# mlpi13e2emi = sp9e2emi.specfit.parinfo
+# print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2emi.specfit.parinfo)))
+# print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2emi.specfit.parinfo)))
+# print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2emi.specfit.parinfo)))
+# print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2emi.specfit.parinfo)))
+# print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2emi.specfit.parinfo)))
 
 sp6e8,spK6e8,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e8', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
 sp6e8.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
@@ -128,9 +142,9 @@ sp7e8,spK7e8,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e8', headerfile='/
 sp7e8.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
 sp9e8,spK9e8,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e8', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
 sp9e8.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp10e8,spK10e8,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-29GHzcont.map.image.fits')
+sp10e8,spK10e8,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e8', headerfile='/Users/adam/work/w51/goddi/W51-29GHzcont.map.image.fits')
 sp10e8.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp13e8,spK13e8,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-proto', headerfile='/Users/adam/work/w51/goddi/W51-33GHzcont.map.image.fits')
+sp13e8,spK13e8,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e8', headerfile='/Users/adam/work/w51/goddi/W51-33GHzcont.map.image.fits')
 sp13e8.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
 
 sp6e8.plotter()
@@ -149,9 +163,9 @@ sp9e8.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], 
 hfpi6e8 = sp6e8.specfit.parinfo
 hfpi7e8 = sp7e8.specfit.parinfo
 hfpi9e8 = sp9e8.specfit.parinfo
-print "e8"
-print "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e8.specfit.parinfo)))
-print "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e8.specfit.parinfo)))
+print >>outf, "e8"
+print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e8.specfit.parinfo)))
+print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e8.specfit.parinfo)))
 """
 6-6 peak=0.0552312979281 +/- 0.00339213398418, fwhm=12.0092504285 +/- 0.346442710066, integral=3.60073813128 +/- 0.265490554173, center=59.8513485763 +/- 0.165718109489
 7-7 peak=0.0343580596483 +/- 0.00211133669018, fwhm=7.08292886544 +/- 0.477361456933, integral=0.779163995174 +/- 0.0883610449159, center=59.9800528242 +/- 0.29151363486
@@ -166,11 +180,11 @@ mlpi7e8 = sp7e8.specfit.parinfo
 mlpi9e8 = sp9e8.specfit.parinfo
 mlpi10e8 = sp9e8.specfit.parinfo
 mlpi13e8 = sp9e8.specfit.parinfo
-print "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e8.specfit.parinfo)))
-print "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e8.specfit.parinfo)))
-print "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e8.specfit.parinfo)))
-print "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e8.specfit.parinfo)))
-print "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e8.specfit.parinfo)))
+print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e8.specfit.parinfo)))
+print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e8.specfit.parinfo)))
+print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e8.specfit.parinfo)))
+print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e8.specfit.parinfo)))
+print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e8.specfit.parinfo)))
 """
 gaussian 6-6 peak=0.278613851186 +/- 0.00324112286397, fwhm=12.3888928639 +/- 0.166414956455, integral=19.3304597881 +/- 0.430595034151, center=59.0587207674 +/- 0.0706699251669
 gaussian 7-7 peak=0.19046626119 +/- 0.00375662817502, fwhm=11.1985631899 +/- 0.255043061619, integral=10.7973493377 +/- 0.407787818476, center=59.7258654571 +/- 0.108306812353
@@ -178,50 +192,241 @@ gaussian 9-9 peak=0.0829717146021 +/- 0.00468072809892, fwhm=11.1981635835 +/- 0
 """
 
 
-sp6e2abs,spK6e2abs,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
-sp6e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp7e2abs,spK7e2abs,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
-sp7e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp9e2abs,spK9e2abs,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
-sp9e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp10e2abs,spK10e2abs,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
-sp10e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
-sp13e2abs,spK13e2abs,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
-sp13e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp6e2abs,spK6e2abs,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+# sp6e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp7e2abs,spK7e2abs,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+# sp7e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp9e2abs,spK9e2abs,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+# sp9e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp10e2abs,spK10e2abs,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+# sp10e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+# sp13e2abs,spK13e2abs,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-tot', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+# sp13e2abs.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
 
-sp6e2abs.plotter()
-sp7e2abs.plotter()
-sp9e2abs.plotter()
+# sp6e2abs.plotter()
+# sp7e2abs.plotter()
+# sp9e2abs.plotter()
+# limits = [(50, 65), (25,30), (-10, 0), (0.1, 6), (30, 35), (-10, 0), (0.1, 6)]
+# limited = [(True,True)]*7
+# tied = ['']*7
+# tied[6] = 'p[3]'
+# tied[5] = 'p[2]'
+# sp6e2abs.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
+# sp7e2abs.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
+# sp9e2abs.specfit(fittype='hfonly', guesses=[58, 27.0, -0.1, 2.0, 30.1, -0.1, 2.0], fixed=[F,T,F,F,T,F,F], limited=limited, limits=limits, tied=tied)
+# hfpi6e2abs = sp6e2abs.specfit.parinfo
+# hfpi7e2abs = sp7e2abs.specfit.parinfo
+# hfpi9e2abs = sp9e2abs.specfit.parinfo
+# print >>outf, "OUTDATED - e2abs - superceded by e2w"
+# print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2abs.specfit.parinfo)))
+# print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2abs.specfit.parinfo)))
+# print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2abs.specfit.parinfo)))
+# sp6e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+# sp7e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+# sp9e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+# sp10e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+# sp13e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+# mlpi6e2abs = sp6e2abs.specfit.parinfo
+# mlpi7e2abs = sp7e2abs.specfit.parinfo
+# mlpi9e2abs = sp9e2abs.specfit.parinfo
+# mlpi10e2abs = sp9e2abs.specfit.parinfo
+# mlpi13e2abs = sp9e2abs.specfit.parinfo
+# print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2abs.specfit.parinfo)))
+# print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2abs.specfit.parinfo)))
+# print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2abs.specfit.parinfo)))
+# print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2abs.specfit.parinfo)))
+# print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2abs.specfit.parinfo)))
+
+# e2w: absorption
+sp6e2w,spK6e2w,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2w', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp6e2w.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp7e2w,spK7e2w,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2w', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp7e2w.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp9e2w,spK9e2w,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2w', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp9e2w.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp10e2w,spK10e2w,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2w', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp10e2w.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp13e2w,spK13e2w,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2w', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp13e2w.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+
+sp6e2w.plotter()
+sp7e2w.plotter()
+sp9e2w.plotter()
 limits = [(50, 65), (25,30), (-10, 0), (0.1, 6), (30, 35), (-10, 0), (0.1, 6)]
 limited = [(True,True)]*7
 tied = ['']*7
 tied[6] = 'p[3]'
 tied[5] = 'p[2]'
-sp6e2abs.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
-sp7e2abs.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
-sp9e2abs.specfit(fittype='hfonly', guesses=[58, 27.0, -0.1, 2.0, 30.1, -0.1, 2.0], fixed=[F,T,F,F,T,F,F], limited=limited, limits=limits, tied=tied)
-hfpi6e2abs = sp6e2abs.specfit.parinfo
-hfpi7e2abs = sp7e2abs.specfit.parinfo
-hfpi9e2abs = sp9e2abs.specfit.parinfo
-print "e2abs"
-print "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2abs.specfit.parinfo)))
-print "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2abs.specfit.parinfo)))
-print "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2abs.specfit.parinfo)))
-sp6e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
-sp7e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
-sp9e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
-sp10e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
-sp13e2abs.specfit(fittype='gaussian', guesses=[-1, 58, 1])
-mlpi6e2abs = sp6e2abs.specfit.parinfo
-mlpi7e2abs = sp7e2abs.specfit.parinfo
-mlpi9e2abs = sp9e2abs.specfit.parinfo
-mlpi10e2abs = sp9e2abs.specfit.parinfo
-mlpi13e2abs = sp9e2abs.specfit.parinfo
-print "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2abs.specfit.parinfo)))
-print "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2abs.specfit.parinfo)))
-print "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2abs.specfit.parinfo)))
-print "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2abs.specfit.parinfo)))
-print "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2abs.specfit.parinfo)))
+sp6e2w.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
+sp7e2w.specfit(fittype='hfonly', guesses=[58, 26.9, -0.1, 2.0, 31.4, -0.1, 2.0], fixed=[F,F,F,F,F,F,F], limited=limited, limits=limits)
+sp9e2w.specfit(fittype='hfonly', guesses=[58, 27.0, -0.1, 2.0, 30.1, -0.1, 2.0], fixed=[F,T,F,F,T,F,F], limited=limited, limits=limits, tied=tied)
+hfpi6e2w = sp6e2w.specfit.parinfo
+hfpi7e2w = sp7e2w.specfit.parinfo
+hfpi9e2w = sp9e2w.specfit.parinfo
+sp6e2w.plotter.savefig(os.path.join(savepath,'sp6e2w_hf.png'))
+sp7e2w.plotter.savefig(os.path.join(savepath,'sp6e2w_hf.png'))
+sp9e2w.plotter.savefig(os.path.join(savepath,'sp6e2w_hf.png'))
+
+print >>outf, "e2w"
+print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2w.specfit.parinfo)))
+print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2w.specfit.parinfo)))
+print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2w.specfit.parinfo)))
+sp6e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+sp7e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+sp9e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+sp10e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+sp13e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
+mlpi6e2w = sp6e2w.specfit.parinfo
+mlpi7e2w = sp7e2w.specfit.parinfo
+mlpi9e2w = sp9e2w.specfit.parinfo
+mlpi10e2w = sp9e2w.specfit.parinfo
+mlpi13e2w = sp9e2w.specfit.parinfo
+print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2w.specfit.parinfo)))
+print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2w.specfit.parinfo)))
+print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2w.specfit.parinfo)))
+print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2w.specfit.parinfo)))
+print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2w.specfit.parinfo)))
+
+
+# e2e aka e2east
+sp6e2e,spK6e2e,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp6e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp7e2e,spK7e2e,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp7e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp9e2e,spK9e2e,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp9e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp10e2e,spK10e2e,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp10e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp13e2e,spK13e2e,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp13e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+
+sp6e2e.plotter()
+sp7e2e.plotter()
+sp9e2e.plotter()
+sp6e2e.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp7e2e.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp9e2e.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F])
+hfpi6e2e = sp6e2e.specfit.parinfo
+hfpi7e2e = sp7e2e.specfit.parinfo
+hfpi9e2e = sp9e2e.specfit.parinfo
+sp6e2e.plotter.savefig(os.path.join(savepath,'sp6e2e_hf.png'))
+sp7e2e.plotter.savefig(os.path.join(savepath,'sp6e2e_hf.png'))
+sp9e2e.plotter.savefig(os.path.join(savepath,'sp6e2e_hf.png'))
+
+print >>outf, "e2e"
+print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2e.specfit.parinfo)))
+print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2e.specfit.parinfo)))
+print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2e.specfit.parinfo)))
+sp6e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp7e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp9e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp10e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp13e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
+mlpi6e2e = sp6e2e.specfit.parinfo
+mlpi7e2e = sp7e2e.specfit.parinfo
+mlpi9e2e = sp9e2e.specfit.parinfo
+mlpi10e2e = sp9e2e.specfit.parinfo
+mlpi13e2e = sp9e2e.specfit.parinfo
+print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2e.specfit.parinfo)))
+print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2e.specfit.parinfo)))
+print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2e.specfit.parinfo)))
+print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2e.specfit.parinfo)))
+print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2e.specfit.parinfo)))
+
+
+# e2nw, e2northwest
+sp6e2nw,spK6e2nw,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2nw', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp6e2nw.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp7e2nw,spK7e2nw,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2nw', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp7e2nw.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp9e2nw,spK9e2nw,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2nw', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp9e2nw.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp10e2nw,spK10e2nw,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2nw', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp10e2nw.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp13e2nw,spK13e2nw,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2nw', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp13e2nw.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+
+sp6e2nw.plotter()
+sp7e2nw.plotter()
+sp9e2nw.plotter()
+sp6e2nw.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp7e2nw.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp9e2nw.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F])
+hfpi6e2nw = sp6e2nw.specfit.parinfo
+hfpi7e2nw = sp7e2nw.specfit.parinfo
+hfpi9e2nw = sp9e2nw.specfit.parinfo
+sp6e2nw.plotter.savefig(os.path.join(savepath,'sp6e2nw_hf.png'))
+sp7e2nw.plotter.savefig(os.path.join(savepath,'sp6e2nw_hf.png'))
+sp9e2nw.plotter.savefig(os.path.join(savepath,'sp6e2nw_hf.png'))
+
+print >>outf, "e2nw"
+print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2nw.specfit.parinfo)))
+print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2nw.specfit.parinfo)))
+print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2nw.specfit.parinfo)))
+sp6e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp7e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp9e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp10e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp13e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
+mlpi6e2nw = sp6e2nw.specfit.parinfo
+mlpi7e2nw = sp7e2nw.specfit.parinfo
+mlpi9e2nw = sp9e2nw.specfit.parinfo
+mlpi10e2nw = sp9e2nw.specfit.parinfo
+mlpi13e2nw = sp9e2nw.specfit.parinfo
+print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2nw.specfit.parinfo)))
+print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2nw.specfit.parinfo)))
+print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2nw.specfit.parinfo)))
+print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2nw.specfit.parinfo)))
+print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2nw.specfit.parinfo)))
+
+
+# e2clump
+sp6e2clump,spK6e2clump,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2-clump', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp6e2clump.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp7e2clump,spK7e2clump,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2-clump', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
+sp7e2clump.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp9e2clump,spK9e2clump,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2-clump', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
+sp9e2clump.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp10e2clump,spK10e2clump,_,_ = goddi_nh3_fits.load_spectrum(10, object='w51e2-clump', headerfile='/Users/adam/work/w51/goddi/W51-29GHzcont.map.image.fits')
+sp10e2clump.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+sp13e2clump,spK13e2clump,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2-clump', headerfile='/Users/adam/work/w51/goddi/W51-33GHzcont.map.image.fits')
+sp13e2clump.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+
+sp6e2clump.plotter()
+sp7e2clump.plotter()
+sp9e2clump.plotter()
+sp6e2clump.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp7e2clump.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,F,F,F,F,F,F])
+sp9e2clump.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F])
+hfpi6e2clump = sp6e2clump.specfit.parinfo
+hfpi7e2clump = sp7e2clump.specfit.parinfo
+hfpi9e2clump = sp9e2clump.specfit.parinfo
+sp6e2clump.plotter.savefig(os.path.join(savepath,'sp6e2clump_hf.png'))
+sp7e2clump.plotter.savefig(os.path.join(savepath,'sp6e2clump_hf.png'))
+sp9e2clump.plotter.savefig(os.path.join(savepath,'sp6e2clump_hf.png'))
+
+print >>outf, "e2clump"
+print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2clump.specfit.parinfo)))
+print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2clump.specfit.parinfo)))
+print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2clump.specfit.parinfo)))
+sp6e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp7e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp9e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp10e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
+sp13e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
+mlpi6e2clump = sp6e2clump.specfit.parinfo
+mlpi7e2clump = sp7e2clump.specfit.parinfo
+mlpi9e2clump = sp9e2clump.specfit.parinfo
+mlpi10e2clump = sp9e2clump.specfit.parinfo
+mlpi13e2clump = sp9e2clump.specfit.parinfo
+print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2clump.specfit.parinfo)))
+print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2clump.specfit.parinfo)))
+print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2clump.specfit.parinfo)))
+print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2clump.specfit.parinfo)))
+print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2clump.specfit.parinfo)))
+
+
+outf.close()
 
 
 """
@@ -281,13 +486,13 @@ flux_e8 = {'66': (full_integral(hfpi6e8, mlpi6e8)*u.Jy).to(u.K, u.brightness_tem
            '1010': (full_integral(None, mlpi10e8)*u.Jy).to(u.K, u.brightness_temperature(areas['e8'], freqs['1010']))*u.km/u.s,
            '1313': (full_integral(None, mlpi13e8)*u.Jy).to(u.K, u.brightness_temperature(areas['e8'], freqs['1313']))*u.km/u.s,
           }
-flux_e2emi = {'66': (full_integral(hfpi6e2emi, mlpi6e2emi)*u.Jy).to(u.K, u.brightness_temperature(areas['e2emi'], freqs['66']))*u.km/u.s,
-              '77': (full_integral(hfpi7e2emi, mlpi7e2emi)*u.Jy).to(u.K, u.brightness_temperature(areas['e2emi'], freqs['77']))*u.km/u.s,
-              '99': (full_integral(hfpi9e2emi, mlpi9e2emi)*u.Jy).to(u.K, u.brightness_temperature(areas['e2emi'], freqs['99']))*u.km/u.s,
-              '1010': (full_integral(None, mlpi10e2emi)*u.Jy).to(u.K, u.brightness_temperature(areas['e2emi'], freqs['1010']))*u.km/u.s,
-              '1313': (full_integral(None, mlpi13e2emi)*u.Jy).to(u.K, u.brightness_temperature(areas['e2emi'], freqs['1313']))*u.km/u.s,
+flux_e2e = {'66': (full_integral(hfpi6e2e, mlpi6e2e)*u.Jy).to(u.K, u.brightness_temperature(areas['e2e'], freqs['66']))*u.km/u.s,
+            '77': (full_integral(hfpi7e2e, mlpi7e2e)*u.Jy).to(u.K, u.brightness_temperature(areas['e2e'], freqs['77']))*u.km/u.s,
+            '99': (full_integral(hfpi9e2e, mlpi9e2e)*u.Jy).to(u.K, u.brightness_temperature(areas['e2e'], freqs['99']))*u.km/u.s,
+            '1010': (full_integral(None, mlpi10e2e)*u.Jy).to(u.K, u.brightness_temperature(areas['e2e'], freqs['1010']))*u.km/u.s,
+            '1313': (full_integral(None, mlpi13e2e)*u.Jy).to(u.K, u.brightness_temperature(areas['e2e'], freqs['1313']))*u.km/u.s,
           }
-taue2emi = {'66': 100,
+taue2e = {'66': 100,
             '77': 77,
             '99': 43,
             '1010': None,
@@ -301,9 +506,9 @@ taue8 = {'66':27,
            }
 
 Nu_e8 = {line: Nu_thin_hightex(flux_e8[line], linestrengths[line], freqs[line]) for line in freqs}
-Nu_e2emi = {line: Nu_thin_hightex(flux_e2emi[line], linestrengths[line], freqs[line]) for line in freqs}
+Nu_e2e = {line: Nu_thin_hightex(flux_e2e[line], linestrengths[line], freqs[line]) for line in freqs}
 Nu_e8_taucorr = {line: Nu_thin_hightex(flux_e8[line], linestrengths[line], freqs[line], tau=taue8[line]) for line in freqs}
-Nu_e2emi_taucorr = {line: Nu_thin_hightex(flux_e2emi[line], linestrengths[line], freqs[line], tau=taue2emi[line]) for line in freqs}
+Nu_e2e_taucorr = {line: Nu_thin_hightex(flux_e2e[line], linestrengths[line], freqs[line], tau=taue2e[line]) for line in freqs}
 
 # http://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d017002.pdf
 B0=(298117.0*u.MHz)
@@ -326,7 +531,7 @@ def fit_tex(eupper, nupperoverg):
 
     Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
 
-    print("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot))
+    print >>outf,("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot))
 
     return Ntot, tex, result.slope, result.intercept
 
@@ -362,31 +567,31 @@ ax.set_xlabel("$E_u$ [K]")
 ax.set_title('e8')
 pl.legend(loc='best')
 
-print("e2emi")
+print("e2e")
 fig = pl.figure(2)
 fig.clf()
 ax = pl.gca()
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
-            y=[Nu_e2emi[line][0].value*degeneracy[line] for line in freqs],
-            yerr=[Nu_e2emi[line][1].value*degeneracy[line] for line in freqs],
+            y=[Nu_e2e[line][0].value*degeneracy[line] for line in freqs],
+            yerr=[Nu_e2e[line][1].value*degeneracy[line] for line in freqs],
             marker='s',
             linestyle='none')
-Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e2emi[line][0].value*degeneracy[line] for line in freqs])
+Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e2e[line][0].value*degeneracy[line] for line in freqs])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
-print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2emi']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2e']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
-            y=[Nu_e2emi_taucorr[line][0].value*degeneracy[line] for line in freqs],
-            yerr=[Nu_e2emi_taucorr[line][1].value*degeneracy[line] for line in freqs],
+            y=[Nu_e2e_taucorr[line][0].value*degeneracy[line] for line in freqs],
+            yerr=[Nu_e2e_taucorr[line][1].value*degeneracy[line] for line in freqs],
             marker='s',
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs],
-                                [Nu_e2emi_taucorr[line][0].value*degeneracy[line] for line in freqs])
+                                [Nu_e2e_taucorr[line][0].value*degeneracy[line] for line in freqs])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
 ax.set_yscale('log')
 #ax.set_xscale('log')
 ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
 ax.set_xlabel("$E_u$ [K]")
-ax.set_title('e2emi')
+ax.set_title('e2e')
 pl.legend(loc='best')
 
 pl.draw()
