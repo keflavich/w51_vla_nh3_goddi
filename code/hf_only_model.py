@@ -3,12 +3,18 @@ from pyspeckit.spectrum.models import model
 from astropy import units as u
 import numpy as np
 
-def hfonly(x, dv, dx1, amp1, width1, dx2, amp2, width2, **kwargs):
+def hfonly(x, dv, dx1, amp1, width1, dx2, amp2, width2, return_hyperfine_components=False, **kwargs):
 
-    return (gaussian(x, amp1, dv+dx1, width1)+
-            gaussian(x, amp1, dv-dx1, width1)+
-            gaussian(x, amp2, dv+dx2, width2)+
-            gaussian(x, amp2, dv-dx2, width2))
+    if return_hyperfine_components:
+        return (gaussian(x, amp1, dv+dx1, width1),
+                gaussian(x, amp1, dv-dx1, width1),
+                gaussian(x, amp2, dv+dx2, width2),
+                gaussian(x, amp2, dv-dx2, width2))
+    else:
+        return (gaussian(x, amp1, dv+dx1, width1)+
+                gaussian(x, amp1, dv-dx1, width1)+
+                gaussian(x, amp2, dv+dx2, width2)+
+                gaussian(x, amp2, dv-dx2, width2))
 
 def hfonly_fitter():
 
