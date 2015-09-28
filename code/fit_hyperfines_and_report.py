@@ -1,7 +1,7 @@
 """
 Code for populating table 3
 
-Run this in a direcotry that contains the relevant spectrum text files
+Run this in a directory that contains the relevant spectrum text files
 """
 import os
 import numpy as np
