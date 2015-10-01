@@ -194,11 +194,18 @@ def t_d_tau(lines_list):
 pl.figure(2).clf()
 T,N = t_d_tau([6,7,9,13,])
 from astropy import units as u
+
+# 2000 au comes from an integration region 0.8 by 0.9"
+radius = 2000*u.au # was: 0.0078*u.pc
+radius = 1377*u.au # from gaussian fitting - deconvolved source size
+
 Xnh3 = 1e-7
-col = ((N*u.cm**-2)/Xnh3 / (0.0078*u.pc)).to(u.cm**-3)
+col = ((N*u.cm**-2)/Xnh3 / (radius)).to(u.cm**-3)
 print col, np.log10(col.value)
-mass = ((N*u.cm**-2)/Xnh3 * (2*np.pi*(0.0078*u.pc)**2) * (2.8*u.Da)).to(u.M_sun)
+mass = ((N*u.cm**-2)/Xnh3 * (2*np.pi*(radius)**2) * (2.8*u.Da)).to(u.M_sun)
 print mass, np.log10(mass.value)
+
+pl.savefig('figures/absorption_physical_parameter_fit_hardcodedtau.png')
 
 
 pl.draw()

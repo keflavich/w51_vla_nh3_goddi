@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pyspeckit
 import goddi_nh3_fits
-from hf_only_model import hfonly_fitter
+from hf_only_model import hfonly_fitter, sixsix_movinghf_fitter
 from astropy import units as u
 from astropy import constants
 from astroquery.splatalogue import Splatalogue
@@ -25,9 +25,11 @@ outf = open(resultpath, 'w')
 distance = 5.41*u.kpc
 XNH3 = 1e-7
 
-areas = {'e2e': np.pi*0.45*u.arcsec*0.4459*u.arcsec, # WARNING: this hasn't been updated since the change from e2emi to e2e
+areas = {'e2e': np.pi*0.45*u.arcsec*0.4459*u.arcsec,
          'e2abs': np.pi*0.45*u.arcsec*0.40*u.arcsec,
          'e8': np.pi*2.1707*u.arcsec*1.6168*u.arcsec,
+         'e2nw': np.pi*0.450*u.arcsec*0.400*u.arcsec,
+         'e2clump': (10.87-0.58)*u.arcsec**2,
         }
 
 freqs = {'66': 25.05596*u.GHz,
@@ -222,6 +224,7 @@ print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +
 # e2e aka e2east
 sp6e2e,spK6e2e,_,_ = goddi_nh3_fits.load_spectrum(6, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
 sp6e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
+spK6e2e.specfit.Registry.add_fitter('sixsix',sixsix_movinghf_fitter(),7)
 sp7e2e,spK7e2e,_,_ = goddi_nh3_fits.load_spectrum(7, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-25GHzcont.map.image.fits')
 sp7e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
 sp9e2e,spK9e2e,_,_ = goddi_nh3_fits.load_spectrum(9, object='w51e2e', headerfile='/Users/adam/work/w51/goddi/W51-27GHzcont.map.image.fits')
@@ -232,10 +235,13 @@ sp13e2e,spK13e2e,_,_ = goddi_nh3_fits.load_spectrum(13, object='w51e2e', headerf
 sp13e2e.specfit.Registry.add_fitter('hfonly',hfonly_fitter(),7)
 
 sp6e2e.plotter()
+spK6e2e.plotter()
 sp7e2e.plotter()
 sp9e2e.plotter()
 # sp6e2e might be optically thick (in hyperfines, in emission!)
 sp6e2e.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied)
+spK6e2e.specfit(fittype='sixsix', guesses=[58, 100, 26.9, 31.4, 2.0, 1200, 0], fixed=[F,F,T,T,F,T,T])
+spK6e2e.specfit.plot_fit(show_hyperfine_components=True)
 sp7e2e.specfit(fittype='hfonly', guesses=[58, 27.3, 0.02, 2.0, 31.2, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied)
 sp9e2e.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied)
 sp6e2e.specfit.plot_fit(show_hyperfine_components=True)
@@ -245,6 +251,7 @@ hfpi6e2e = sp6e2e.specfit.parinfo
 hfpi7e2e = sp7e2e.specfit.parinfo
 hfpi9e2e = sp9e2e.specfit.parinfo
 sp6e2e.plotter.savefig(os.path.join(savepath,'sp6e2e_hf.png'))
+spK6e2e.plotter.savefig(os.path.join(savepath,'spK6e2e_hf.png'))
 sp7e2e.plotter.savefig(os.path.join(savepath,'sp7e2e_hf.png'))
 sp9e2e.plotter.savefig(os.path.join(savepath,'sp9e2e_hf.png'))
 
@@ -286,6 +293,7 @@ sp7e2nw.plotter()
 sp9e2nw.plotter()
 sp6e2nw.specfit(fittype='hfonly', guesses=[58, 26.9, 0.02, 2.0, 31.4, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied)
 sp7e2nw.specfit(fittype='hfonly', guesses=[58, 27.3, 0.02, 2.0, 31.2, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied)
+limits = [(50, 65), (25,30), (0, 1), (0.1, 6), (30, 35), (0, 1), (0.1, 6)]
 sp9e2nw.specfit(fittype='hfonly', guesses=[58, 27.0, 0.02, 2.0, 30.1, 0.02, 2.0], fixed=[F,T,F,F,T,F,F], tied=tied, limited=limited, limits=limits)
 sp6e2nw.specfit.plot_fit(show_hyperfine_components=True)
 sp7e2nw.specfit.plot_fit(show_hyperfine_components=True)
@@ -423,11 +431,43 @@ taue8 = {'66':27,
          '1010': None,
          '1313': None,
            }
+# if you want to exclude 1010 from the fit, uncomment this
+#freqs.pop('1010')
 
 Nu_e8 = {line: Nu_thin_hightex(flux_e8[line], linestrengths[line], freqs[line]) for line in freqs}
 Nu_e2e = {line: Nu_thin_hightex(flux_e2e[line], linestrengths[line], freqs[line]) for line in freqs}
 Nu_e8_taucorr = {line: Nu_thin_hightex(flux_e8[line], linestrengths[line], freqs[line], tau=taue8[line]) for line in freqs}
 Nu_e2e_taucorr = {line: Nu_thin_hightex(flux_e2e[line], linestrengths[line], freqs[line], tau=taue2e[line]) for line in freqs}
+
+
+flux_e2nw = {'66': (full_integral(hfpi6e2nw, mlpi6e2nw)*u.Jy).to(u.K, u.brightness_temperature(areas['e2nw'], freqs['66']))*u.km/u.s,
+            '77': (full_integral(hfpi7e2nw, mlpi7e2nw)*u.Jy).to(u.K, u.brightness_temperature(areas['e2nw'], freqs['77']))*u.km/u.s,
+            '99': (full_integral(hfpi9e2nw, mlpi9e2nw)*u.Jy).to(u.K, u.brightness_temperature(areas['e2nw'], freqs['99']))*u.km/u.s,
+#            '1010': (full_integral(None, mlpi10e2nw)*u.Jy).to(u.K, u.brightness_temperature(areas['e2nw'], freqs['1010']))*u.km/u.s,
+#            '1313': (full_integral(None, mlpi13e2nw)*u.Jy).to(u.K, u.brightness_temperature(areas['e2nw'], freqs['1313']))*u.km/u.s,
+          }
+taue2nw = {'66': None,
+            '77': None,
+            '99': None,
+            '1010': None,
+            '1313': None,
+           }
+Nu_e2nw = {line: Nu_thin_hightex(flux_e2nw[line], linestrengths[line], freqs[line]) for line in freqs if line in flux_e2nw}
+
+
+flux_e2clump = {'66': (full_integral(hfpi6e2clump, mlpi6e2clump)*u.Jy).to(u.K, u.brightness_temperature(areas['e2clump'], freqs['66']))*u.km/u.s,
+            '77': (full_integral(hfpi7e2clump, mlpi7e2clump)*u.Jy).to(u.K, u.brightness_temperature(areas['e2clump'], freqs['77']))*u.km/u.s,
+            '99': (full_integral(hfpi9e2clump, mlpi9e2clump)*u.Jy).to(u.K, u.brightness_temperature(areas['e2clump'], freqs['99']))*u.km/u.s,
+#            '1010': (full_integral(None, mlpi10e2clump)*u.Jy).to(u.K, u.brightness_temperature(areas['e2clump'], freqs['1010']))*u.km/u.s,
+#            '1313': (full_integral(None, mlpi13e2clump)*u.Jy).to(u.K, u.brightness_temperature(areas['e2clump'], freqs['1313']))*u.km/u.s,
+          }
+taue2clump = {'66': None,
+            '77': None,
+            '99': None,
+            '1010': None,
+            '1313': None,
+           }
+Nu_e2clump = {line: Nu_thin_hightex(flux_e2clump[line], linestrengths[line], freqs[line]) for line in freqs if line in flux_e2clump}
 
 # http://spec.jpl.nasa.gov/ftp/pub/catalog/doc/d017002.pdf
 B0=(298117.0*u.MHz)
@@ -469,7 +509,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             marker='s',
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e8[line][0].value*degeneracy[line] for line in freqs])
-ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
 print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e8']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             y=[Nu_e8_taucorr[line][0].value*degeneracy[line] for line in freqs],
@@ -478,13 +518,14 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs],
                                 [Nu_e8_taucorr[line][0].value*degeneracy[line] for line in freqs])
-ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
 ax.set_yscale('log')
 #ax.set_xscale('log')
 ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
 ax.set_xlabel("$E_u$ [K]")
 ax.set_title('e8')
 pl.legend(loc='best')
+pl.savefig(os.path.join(savepath, 'e8_rotational_diagram_fit.png'))
 
 print("e2e")
 fig = pl.figure(2)
@@ -496,7 +537,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             marker='s',
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e2e[line][0].value*degeneracy[line] for line in freqs])
-ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
 print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2e']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             y=[Nu_e2e_taucorr[line][0].value*degeneracy[line] for line in freqs],
@@ -505,13 +546,55 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs],
                                 [Nu_e2e_taucorr[line][0].value*degeneracy[line] for line in freqs])
-ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$'.format(tex, Ntot))
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
 ax.set_yscale('log')
 #ax.set_xscale('log')
 ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
 ax.set_xlabel("$E_u$ [K]")
 ax.set_title('e2e')
 pl.legend(loc='best')
+pl.savefig(os.path.join(savepath, 'e2e_rotational_diagram_fit.png'))
+
+print("e2nw")
+fig = pl.figure(3)
+fig.clf()
+ax = pl.gca()
+a,b,c = ax.errorbar(x=[eupper[line] for line in freqs if line in Nu_e2nw],
+            y=[Nu_e2nw[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2nw],
+            yerr=[Nu_e2nw[line][1].value*degeneracy[line] for line in freqs if line in Nu_e2nw],
+            marker='s',
+            linestyle='none')
+Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs if line in Nu_e2nw], [Nu_e2nw[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2nw])
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
+print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2nw']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+ax.set_yscale('log')
+#ax.set_xscale('log')
+ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
+ax.set_xlabel("$E_u$ [K]")
+ax.set_title('e2nw')
+pl.legend(loc='best')
+pl.savefig(os.path.join(savepath, 'e2nw_rotational_diagram_fit.png'))
+
+
+print("e2clump")
+fig = pl.figure(4)
+fig.clf()
+ax = pl.gca()
+a,b,c = ax.errorbar(x=[eupper[line] for line in freqs if line in Nu_e2clump],
+            y=[Nu_e2clump[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2clump],
+            yerr=[Nu_e2clump[line][1].value*degeneracy[line] for line in freqs if line in Nu_e2clump],
+            marker='s',
+            linestyle='none')
+Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs if line in Nu_e2clump], [Nu_e2clump[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2clump])
+ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
+print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2clump']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+ax.set_yscale('log')
+#ax.set_xscale('log')
+ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
+ax.set_xlabel("$E_u$ [K]")
+ax.set_title('e2clump')
+pl.legend(loc='best')
+pl.savefig(os.path.join(savepath, 'e2clump_rotational_diagram_fit.png'))
 
 pl.draw()
 pl.show()
