@@ -191,7 +191,9 @@ def fit_highj_nh3_absorption(j=6, j2=6, object='w51e2-tot',
     # -> column density (probably OK using simple LTE)
     # -> rotational temperature?
 
-    spK.specfit.Registry.add_fitter('sixsix_movinghf', sixsix_movinghf_fitter(), 5)
+    f66_5 = sixsix_movinghf_fitter()
+    f66_5.npars=5
+    spK.specfit.Registry.add_fitter('sixsix_movinghf', f66_5, 5)
     spK.specfit(fittype='sixsix_movinghf', guesses=[58, 30, 26.9, 31.2, 2])
     spK.specfit.plotresiduals(axis=spK.plotter.axis, clear=False,
                               yoffset=spK.data.min()*1.2, label=False)

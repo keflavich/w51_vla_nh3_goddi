@@ -130,9 +130,9 @@ sp9e8.specfit.plot_fit(show_hyperfine_components=True)
 hfpi6e8 = sp6e8.specfit.parinfo
 hfpi7e8 = sp7e8.specfit.parinfo
 hfpi9e8 = sp9e8.specfit.parinfo
-print >>outf, "e8"
-print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e8.specfit.parinfo)))
-print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e8.specfit.parinfo)))
+print("e8", file=outf)
+print("hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e8.specfit.parinfo))), file=outf)
+print("hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e8.specfit.parinfo))), file=outf)
 """
 6-6 peak=0.0552312979281 +/- 0.00339213398418, fwhm=12.0092504285 +/- 0.346442710066, integral=3.60073813128 +/- 0.265490554173, center=59.8513485763 +/- 0.165718109489
 7-7 peak=0.0343580596483 +/- 0.00211133669018, fwhm=7.08292886544 +/- 0.477361456933, integral=0.779163995174 +/- 0.0883610449159, center=59.9800528242 +/- 0.29151363486
@@ -154,11 +154,11 @@ mlpi7e8 = sp7e8.specfit.parinfo
 mlpi9e8 = sp9e8.specfit.parinfo
 mlpi10e8 = sp9e8.specfit.parinfo
 mlpi13e8 = sp9e8.specfit.parinfo
-print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e8.specfit.parinfo)))
-print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e8.specfit.parinfo)))
-print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e8.specfit.parinfo)))
-print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e8.specfit.parinfo)))
-print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e8.specfit.parinfo)))
+print("gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e8.specfit.parinfo))), file=outf)
+print("gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e8.specfit.parinfo))), file=outf)
+print("gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e8.specfit.parinfo))), file=outf)
+print("gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e8.specfit.parinfo))), file=outf)
+print("gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e8.specfit.parinfo))), file=outf)
 """
 gaussian 6-6 peak=0.278613851186 +/- 0.00324112286397, fwhm=12.3888928639 +/- 0.166414956455, integral=19.3304597881 +/- 0.430595034151, center=59.0587207674 +/- 0.0706699251669
 gaussian 7-7 peak=0.19046626119 +/- 0.00375662817502, fwhm=11.1985631899 +/- 0.255043061619, integral=10.7973493377 +/- 0.407787818476, center=59.7258654571 +/- 0.108306812353
@@ -200,10 +200,10 @@ sp6e2w.plotter.savefig(os.path.join(savepath,'sp6e2w_hf.png'))
 sp7e2w.plotter.savefig(os.path.join(savepath,'sp7e2w_hf.png'))
 sp9e2w.plotter.savefig(os.path.join(savepath,'sp9e2w_hf.png'))
 
-print >>outf, "e2w"
-print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2w.specfit.parinfo)))
-print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2w.specfit.parinfo)))
-print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2w.specfit.parinfo)))
+print("e2w", file=outf)
+print("hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2w.specfit.parinfo))), file=outf)
+print("hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2w.specfit.parinfo))), file=outf)
+print("hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2w.specfit.parinfo))), file=outf)
 sp6e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
 sp7e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
 sp9e2w.specfit(fittype='gaussian', guesses=[-1, 58, 1])
@@ -214,11 +214,11 @@ mlpi7e2w = sp7e2w.specfit.parinfo
 mlpi9e2w = sp9e2w.specfit.parinfo
 mlpi10e2w = sp9e2w.specfit.parinfo
 mlpi13e2w = sp9e2w.specfit.parinfo
-print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2w.specfit.parinfo)))
-print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2w.specfit.parinfo)))
-print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2w.specfit.parinfo)))
-print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2w.specfit.parinfo)))
-print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2w.specfit.parinfo)))
+print("gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2w.specfit.parinfo))), file=outf)
+print("gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2w.specfit.parinfo))), file=outf)
+print("gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2w.specfit.parinfo))), file=outf)
+print("gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2w.specfit.parinfo))), file=outf)
+print("gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2w.specfit.parinfo))), file=outf)
 
 
 # e2e aka e2east
@@ -255,10 +255,10 @@ spK6e2e.plotter.savefig(os.path.join(savepath,'spK6e2e_hf.png'))
 sp7e2e.plotter.savefig(os.path.join(savepath,'sp7e2e_hf.png'))
 sp9e2e.plotter.savefig(os.path.join(savepath,'sp9e2e_hf.png'))
 
-print >>outf, "e2e"
-print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2e.specfit.parinfo)))
-print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2e.specfit.parinfo)))
-print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2e.specfit.parinfo)))
+print("e2e", file=outf)
+print("hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2e.specfit.parinfo))), file=outf)
+print("hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2e.specfit.parinfo))), file=outf)
+print("hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2e.specfit.parinfo))), file=outf)
 sp6e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp7e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp9e2e.specfit(fittype='gaussian', guesses=[1, 58, 1])
@@ -269,11 +269,11 @@ mlpi7e2e = sp7e2e.specfit.parinfo
 mlpi9e2e = sp9e2e.specfit.parinfo
 mlpi10e2e = sp9e2e.specfit.parinfo
 mlpi13e2e = sp9e2e.specfit.parinfo
-print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2e.specfit.parinfo)))
-print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2e.specfit.parinfo)))
-print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2e.specfit.parinfo)))
-print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2e.specfit.parinfo)))
-print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2e.specfit.parinfo)))
+print("gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2e.specfit.parinfo))), file=outf)
+print("gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2e.specfit.parinfo))), file=outf)
+print("gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2e.specfit.parinfo))), file=outf)
+print("gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2e.specfit.parinfo))), file=outf)
+print("gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2e.specfit.parinfo))), file=outf)
 
 
 # e2nw, e2northwest
@@ -305,10 +305,10 @@ sp6e2nw.plotter.savefig(os.path.join(savepath,'sp6e2nw_hf.png'))
 sp7e2nw.plotter.savefig(os.path.join(savepath,'sp7e2nw_hf.png'))
 sp9e2nw.plotter.savefig(os.path.join(savepath,'sp9e2nw_hf.png'))
 
-print >>outf, "e2nw"
-print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2nw.specfit.parinfo)))
-print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2nw.specfit.parinfo)))
-print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2nw.specfit.parinfo)))
+print("e2nw", file=outf)
+print("hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2nw.specfit.parinfo))), file=outf)
+print("hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2nw.specfit.parinfo))), file=outf)
+print("hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2nw.specfit.parinfo))), file=outf)
 sp6e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp7e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp9e2nw.specfit(fittype='gaussian', guesses=[1, 58, 1])
@@ -319,11 +319,11 @@ mlpi7e2nw = sp7e2nw.specfit.parinfo
 mlpi9e2nw = sp9e2nw.specfit.parinfo
 mlpi10e2nw = sp9e2nw.specfit.parinfo
 mlpi13e2nw = sp9e2nw.specfit.parinfo
-print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2nw.specfit.parinfo)))
-print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2nw.specfit.parinfo)))
-print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2nw.specfit.parinfo)))
-print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2nw.specfit.parinfo)))
-print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2nw.specfit.parinfo)))
+print("gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2nw.specfit.parinfo))), file=outf)
+print("gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2nw.specfit.parinfo))), file=outf)
+print("gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2nw.specfit.parinfo))), file=outf)
+print("gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2nw.specfit.parinfo))), file=outf)
+print("gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2nw.specfit.parinfo))), file=outf)
 
 
 # e2clump
@@ -356,10 +356,10 @@ sp6e2clump.plotter.savefig(os.path.join(savepath,'sp6e2clump_hf.png'))
 sp7e2clump.plotter.savefig(os.path.join(savepath,'sp7e2clump_hf.png'))
 sp9e2clump.plotter.savefig(os.path.join(savepath,'sp9e2clump_hf.png'))
 
-print >>outf, "e2clump"
-print >>outf, "hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2clump.specfit.parinfo)))
-print >>outf, "hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2clump.specfit.parinfo)))
-print >>outf, "hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2clump.specfit.parinfo)))
+print("e2clump", file=outf)
+print("hf 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp6e2clump.specfit.parinfo))), file=outf)
+print("hf 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp7e2clump.specfit.parinfo))), file=outf)
+print("hf 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals(sp9e2clump.specfit.parinfo))), file=outf)
 sp6e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp7e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
 sp9e2clump.specfit(fittype='gaussian', guesses=[1, 58, 1])
@@ -370,11 +370,11 @@ mlpi7e2clump = sp7e2clump.specfit.parinfo
 mlpi9e2clump = sp9e2clump.specfit.parinfo
 mlpi10e2clump = sp9e2clump.specfit.parinfo
 mlpi13e2clump = sp9e2clump.specfit.parinfo
-print >>outf, "gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2clump.specfit.parinfo)))
-print >>outf, "gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2clump.specfit.parinfo)))
-print >>outf, "gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2clump.specfit.parinfo)))
-print >>outf, "gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2clump.specfit.parinfo)))
-print >>outf, "gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2clump.specfit.parinfo)))
+print("gaussian 6-6 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp6e2clump.specfit.parinfo))), file=outf)
+print("gaussian 7-7 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp7e2clump.specfit.parinfo))), file=outf)
+print("gaussian 9-9 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp9e2clump.specfit.parinfo))), file=outf)
+print("gaussian 10-10 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp10e2clump.specfit.parinfo))), file=outf)
+print("gaussian 13-13 peak={0} +/- {1}, fwhm={2} +/- {3}, integral={4} +/- {5}, center={6} +/- {7}".format(*(tbl_vals_gaussian(sp13e2clump.specfit.parinfo))), file=outf)
 
 
 outf.close()
@@ -490,7 +490,7 @@ def fit_tex(eupper, nupperoverg):
 
     Ntot = np.exp(result.intercept + np.log(Q_rot)) * u.cm**-2
 
-    print("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot))
+    print(("Tex={0}, Ntot={1}, Q_rot={2}".format(tex, Ntot, Q_rot)))
 
     return Ntot, tex, result.slope, result.intercept
 
@@ -510,7 +510,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e8[line][0].value*degeneracy[line] for line in freqs])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
-print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e8']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+print(("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e8']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles()))))
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             y=[Nu_e8_taucorr[line][0].value*degeneracy[line] for line in freqs],
             yerr=[Nu_e8_taucorr[line][1].value*degeneracy[line] for line in freqs],
@@ -538,7 +538,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs], [Nu_e2e[line][0].value*degeneracy[line] for line in freqs])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
-print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2e']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+print(("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2e']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles()))))
 a,b,c = ax.errorbar(x=[eupper[line] for line in freqs],
             y=[Nu_e2e_taucorr[line][0].value*degeneracy[line] for line in freqs],
             yerr=[Nu_e2e_taucorr[line][1].value*degeneracy[line] for line in freqs],
@@ -566,7 +566,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs if line in Nu_e2nw],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs if line in Nu_e2nw], [Nu_e2nw[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2nw])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
-print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2nw']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+print(("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2nw']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles()))))
 ax.set_yscale('log')
 #ax.set_xscale('log')
 ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
@@ -587,7 +587,7 @@ a,b,c = ax.errorbar(x=[eupper[line] for line in freqs if line in Nu_e2clump],
             linestyle='none')
 Ntot,tex,slope,intcpt = fit_tex([eupper[line] for line in freqs if line in Nu_e2clump], [Nu_e2clump[line][0].value*degeneracy[line] for line in freqs if line in Nu_e2clump])
 ax.plot(eups, np.exp(eups*slope + intcpt), color=a.get_color(), label='$T_{{ex}}={0:0.1f}$\n$N(\\mathrm{{NH}}_3)={1:0.1e}$ cm$^{{-2}}$'.format(tex, Ntot.value))
-print("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2clump']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles())))
+print(("Mass lower limit: {0}".format((Ntot/XNH3 * areas['e2clump']*distance**2 * 2.8*u.Da).to(u.M_sun, u.dimensionless_angles()))))
 ax.set_yscale('log')
 #ax.set_xscale('log')
 ax.set_ylabel("$N_u / g$ [cm$^{-2}$]")
