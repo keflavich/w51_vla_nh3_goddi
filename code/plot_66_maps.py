@@ -40,11 +40,14 @@ hdu = fits.PrimaryHDU(data=e2hf[0].data[3,:,:], header=w.to_header())
 Fhfs1 = aplpy.FITSFigure(hdu)
 Fhfs1.show_colorscale(vmin=0.4, vmax=4)
 Fhfs1.show_colorbar()
+Fhfs1.set_title('Width of inner HF lines')
 
 hdu = fits.PrimaryHDU(data=e2hf[0].data[6,:,:], header=w.to_header())
 Fhfs2 = aplpy.FITSFigure(hdu)
 Fhfs2.show_colorscale(vmin=0.4, vmax=4)
 Fhfs2.show_colorbar()
+Fhfs2.set_title('Width of outer HF lines')
+
 
 
 
@@ -102,8 +105,10 @@ hdu = fits.PrimaryHDU(data=e8hf[0].data[3,:,:], header=w.to_header())
 Fe8hfs1 = aplpy.FITSFigure(hdu)
 Fe8hfs1.show_colorscale(vmin=0.4, vmax=5)
 Fe8hfs1.show_colorbar()
+Fe8hfs1.set_title('Width of inner HF lines')
 
 hdu = fits.PrimaryHDU(data=e8hf[0].data[6,:,:], header=w.to_header())
 Fe8hfs2 = aplpy.FITSFigure(hdu)
 Fe8hfs2.show_colorscale(vmin=0.4, vmax=5)
 Fe8hfs2.show_colorbar()
+Fe8hfs2.set_title('Width of outer HF lines')
